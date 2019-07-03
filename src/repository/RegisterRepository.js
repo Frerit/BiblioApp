@@ -25,7 +25,15 @@ export function registerUser(usuario) {
 }
 
 export function getAllCOuntry() {
-    return fetch('http://services.groupkt.com/country/get/all')
+    return fetch('https://restcountries.eu/rest/v2/all')
+        .then(resp => resp.json())
+        .catch(error =>
+            console.error('Error:', error)
+        )
+}
+
+export function getCountryById(code) {
+    return fetch('https://restcountries.eu/rest/v2/alpha/'+ code)
         .then(resp => resp.json())
         .catch(error =>
             console.error('Error:', error)

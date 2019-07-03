@@ -24,7 +24,7 @@ const Login = () => {
         if (usercredencial !== "") {
             await loginUserById(usercredencial)
                 .then( response => responseData(response))
-                .catch()
+                .catch();
             setLoading(false);
         } else {
             setLoading(false);

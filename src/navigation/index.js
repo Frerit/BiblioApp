@@ -18,16 +18,12 @@ const Stack = createStackNavigator({
     },
     Books,
     Detail
-},{
-    initialRouteName: 'Register'
 });
 
 
 const AppNavigator = createSwitchNavigator({
     Login,
     Stack
-},{
-    initialRouteName: 'Stack'
 });
 
 

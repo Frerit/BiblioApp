@@ -11,6 +11,8 @@ import AppNavigator from "./src/navigation";
 
 
 const App = () => {
+    console.disableYellowBox = true;
+    console.ignoredYellowBox = ['Warning: Each', 'Warning: Failed'];
     return (
       <AppNavigator/>
     );

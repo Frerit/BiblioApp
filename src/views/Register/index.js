@@ -3,8 +3,9 @@ import {View, ScrollView, Text, KeyboardAvoidingView, StyleSheet} from 'react-na
 import {Input, Button, Divider, Image} from 'react-native-elements';
 import {Icon, Picker, DatePicker} from "native-base";
 import {useNavigation} from "react-navigation-hooks";
-import {getAllCOuntry, getUserById, registerUser} from "../../repository/RegisterRepository";
+import {getAllCOuntry, getCountryById, getUserById, registerUser} from "../../repository/RegisterRepository";
 
+import _ from "lodash";
 
 const Register = () => {
     const [needRegister, setRegister] = useState(false);
@@ -20,6 +21,7 @@ const Register = () => {
     const [direccion, setDireccion] = useState();
     const [selectCountry, setSelectCountry] = useState(undefined);
     const [birtDate, setBirDate] = useState(new Date());
+    const [alfaCode, setAlfaCode] = useState();
     const [country, setCountry] = useState([
         { name: 'name', alpha2_code: "NA"},
         { name: 'name', alpha2_code: "NA"}
@@ -29,10 +31,19 @@ const Register = () => {
 
     useEffect( async () => {
         await getAllCOuntry()
-            .then(value =>
-                setCountry(value.RestResponse.result)
+            .then(value => {
+                console.log("Couto" + JSON.stringify(value))
+                setCountry(value)
+            }
             );
     },[]);
+
+    useEffect( _.debounce(() => {
+        getCountryById(selectCountry)
+                .then( value =>
+                    setAlfaCode(value.alpha2Code))
+        }
+    ) , [selectCountry]);
 
     async function validateUserRegister() {
         console.log(userConsult);
@@ -72,7 +83,7 @@ const Register = () => {
                 telefono,
                 celular,
                 direccion,
-                paisNacimiento: selectCountry,
+                paisNacimiento: alfaCode,
                 fechaNacimiento: birtDate.toISOString().slice(0,10),
                 tiposUsuario: "3",
                 estadoUsuario: 5
@@ -179,7 +190,7 @@ const Register = () => {
                         onValueChange={ (value) => setSelectCountry(value) } >
 
                         {country.map( item => (
-                            <Picker.Item label={item.name} value={item.alpha2_code} />
+                            <Picker.Item label={item.name} value={item.alpha2Code} />
                         ))}
 
                     </Picker>
@@ -235,6 +246,7 @@ const Register = () => {
                     buttonStyle={{height: 50, borderRadius: 50, backgroundColor: '#00355a'}}
                     onPress={() => !needRegister ? validateUserRegister() : registerNewUser() }
                 />
+                <Text> {alfaCode} </Text>
             </ScrollView>
         </KeyboardAvoidingView>
     );

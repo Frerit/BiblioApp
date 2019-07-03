@@ -6,3 +6,16 @@ export function getBooksByID(id) {
             console.log(err)
         })
 }
+
+export function registerReserva(reserva) {
+    return fetch('https://apibibliopoli.azurewebsites.net/saveReserva', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(reserva)
+        }
+    )
+        .then(resp => resp.json())
+        .catch(error =>
+            console.error('Error Reserva:', error)
+        )
+}

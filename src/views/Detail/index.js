@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import {View, Text, ActivityIndicator, StyleSheet} from 'react-native';
+import {View, Text, ActivityIndicator, StyleSheet, Alert} from 'react-native';
 import {useNavigation, useNavigationParam} from "react-navigation-hooks";
-import {getBooksByID} from "../../repository/DetailRepository";
+import {getBooksByID, registerReserva} from "../../repository/DetailRepository";
 import { Col, Row, Grid } from "react-native-easy-grid";
 import {Button, Image, Rating} from "react-native-elements";
 import {Item, Icon, Input} from "native-base";
@@ -15,14 +15,57 @@ const Detail = () => {
     const { navigate } = useNavigation();
 
     const [book, setBook] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
             getBooksByID(idlibro)
                 .then(resp => setBook(resp))
     },[idlibro] );
 
-    function createResgistro() {
-        
+    async function createResgistro() {
+        setLoading(true);
+        const dataReserva = {
+            title: book.title,
+            idLibro: book.isbn13,
+            subtitle: book.subtitle,
+            authors: book.authors,
+            pages: book.pages,
+            categoria: "1",
+            estado: 1,
+            fechaInicio: new Date().toISOString().slice(0,10),
+            user: user,
+        };
+        await registerReserva(dataReserva)
+            .then(resp => responseDataReserva(resp))
+            .catch(err => responseError(err))
+    }
+
+    function responseDataReserva(reserv) {
+        setLoading(false);
+        if (reserv.id !== undefined && reserv.id >= 0) {
+            Alert.alert(
+                'Reserva Creada',
+                'Se ha creado una resera \n' +
+                'Usuario: ' + reserv.usuario + ' \n' +
+                'Libro Reservado: ' + reserv.libro,
+                [
+                    {text: 'OK', onPress: () => navigate("Register")},
+                ],
+                {cancelable: false},
+            );
+
+        }
+    }
+
+    function responseError(error) {
+        Alert.alert(
+            'Error',
+            error,
+            [
+                {text: 'OK', onPress: () => console.log("OK")},
+            ],
+            {cancelable: false},
+        );
     }
 
     const renderInfoLoading = () => {
@@ -59,6 +102,7 @@ const Detail = () => {
                         <Button
                             icon={<Icon type="Entypo" name="book" size={15} style={{color: 'white', marginRight: 10}}/>}
                             title="Crear Reserva"
+                            buttonStyle={{backgroundColor: '#00355a' , borderRadius: 50,}}
                             onPress={createResgistro}
                             />
                     </Col>

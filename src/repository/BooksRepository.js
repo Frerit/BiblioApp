@@ -6,3 +6,15 @@ export function getBooksByPage(book, page) {
             console.log(err)
         })
 }
+
+export function getBoosByUser(id) {
+    return fetch('https://apibibliopoli.azurewebsites.net/consulta/reserva/', {
+            method: 'GET',
+            headers: { user: id }
+        }
+    )
+        .then(resp => resp.json())
+        .catch(err => {
+            console.log(err)
+        })
+}
